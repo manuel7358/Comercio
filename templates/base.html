@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}COMSERTEL - Servicios Residenciales Claro{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Estilos personalizados para navegación responsive */
+        .navbar-toggler {
+            border: none;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .navbar-nav .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white !important;
+        }
+        /* Estilos para el menú lateral oculto en móviles */
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                position: fixed;
+                top: 56px;
+                left: 0;
+                width: 100%;
+                height: calc(100vh - 56px);
+                background-color: rgba(220, 53, 69, 0.95);
+                z-index: 1000;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+            .navbar-collapse.show {
+                transform: translateX(0);
+            }
+            .navbar-nav {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            .nav-link {
+                color: white !important;
+                padding: 1rem;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            }
+            .nav-link:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+                border-radius: 5px;
+            }
+        }
+        /* Estilos para el footer */
+        footer {
+            background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-top: auto;
+            border-top: 3px solid #8b1d2a;
+        }
+        footer a {
+            color: #ffcccc;
+            text-decoration: none;
+        }
+        footer a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        /* Estilos para las galerías */
+        .galeria-item {
+            margin-bottom: 2rem;
+        }
+        .galeria-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #dc3545;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        .galeria-item:hover img {
+            transform: scale(1.05);
+            border-color: #b02a37;
+        }
+        .galeria-item .card {
+            border: 1px solid #dc3545;
+            transition: box-shadow 0.3s ease;
+        }
+        .galeria-item .card:hover {
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+        }
+        .galeria-item .btn-primary {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .galeria-item .btn-primary:hover {
+            background-color: #b02a37;
+            border-color: #b02a37;
+        }
+        /* Estilos para creadores */
+        .creador-card {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .creador-card img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            border: 3px solid #dc3545;
+            transition: border-color 0.3s ease, transform 0.3s ease;
+        }
+        .creador-card:hover img {
+            border-color: #b02a37;
+            transform: scale(1.1);
+        }
+        .creador-card .card {
+            border: 1px solid #dc3545;
+            transition: box-shadow 0.3s ease;
+        }
+        .creador-card .card:hover {
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+        }
+        .creador-card .btn-outline-primary {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+        .creador-card .btn-outline-primary:hover {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        /* Estilos para botones principales */
+        .btn-primary {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .btn-primary:hover {
+            background-color: #b02a37;
+            border-color: #b02a37;
+        }
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #1e7e34;
+            border-color: #1e7e34;
+        }
+        .btn-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+        }
+        .btn-info:hover {
+            background-color: #117a8b;
+            border-color: #117a8b;
+        }
+        /* Estilos para el jumbotron */
+        .jumbotron {
+            background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        .jumbotron .btn-light {
+            background-color: white;
+            color: #dc3545;
+            border: 2px solid white;
+        }
+        .jumbotron .btn-light:hover {
+            background-color: #f8f9fa;
+            color: #b02a37;
+            border-color: #f8f9fa;
+        }
+        /* Estilos para cards informativos */
+        .card {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .card .fas {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <!-- Navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%); border-bottom: 3px solid #8b1d2a;">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('inicio') }}" style="color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+                <i class="fas fa-wifi me-2"></i> COMSERTEL
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold px-3 py-2 mx-1 rounded" href="{{ url_for('inicio') }}" style="transition: all 0.3s ease;">
+                            <i class="fas fa-home me-1"></i> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold px-3 py-2 mx-1 rounded" href="{{ url_for('galerias') }}" style="transition: all 0.3s ease;">
+                            <i class="fas fa-wifi me-1"></i> Servicios
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold px-3 py-2 mx-1 rounded" href="{{ url_for('creadores') }}" style="transition: all 0.3s ease;">
+                            <i class="fas fa-users me-1"></i> Equipo
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold px-3 py-2 mx-1 rounded" href="{{ url_for('contacto') }}" style="transition: all 0.3s ease;">
+                            <i class="fas fa-envelope me-1"></i> Contacto
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="flex-grow-1">
+        <div class="container mt-4">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>COMSERTEL</h5>
+                    <p>Comercializadora de Servicios Telefónicos - Distribuidor líder de Claro en El Salvador.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h5>Enlaces</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('inicio') }}" class="text-light">Inicio</a></li>
+                        <li><a href="{{ url_for('galerias') }}" class="text-light">Galerías</a></li>
+                        <li><a href="{{ url_for('creadores') }}" class="text-light">Creadores</a></li>
+                        <li><a href="{{ url_for('contacto') }}" class="text-light">Contacto</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p>&copy; 2025 COMSERTEL. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

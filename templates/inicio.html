@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - COMSERTEL{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="jumbotron bg-primary text-white rounded p-5 mb-4">
+            <h1 class="display-4">Bienvenido a COMSERTEL</h1>
+            <p class="lead">Comercializadora de Servicios Residenciales de Claro El Salvador. Conectividad, entretenimiento y comunicación para tu hogar.</p>
+            <a class="btn btn-light btn-lg" href="{{ url_for('galerias') }}" role="button">
+                <i class="fas fa-wifi"></i> Ver Servicios
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-wifi fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Servicios Residenciales</h5>
+                <p class="card-text">Internet, televisión por suscripción y telefonía fija para tu hogar.</p>
+                <a href="{{ url_for('galerias') }}" class="btn btn-primary">Ver Servicios</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Nuestro Equipo</h5>
+                <p class="card-text">Conoce a los profesionales que hacen posible nuestros servicios.</p>
+                <a href="{{ url_for('creadores') }}" class="btn btn-success">Ver Equipo</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-envelope fa-3x text-info mb-3"></i>
+                <h5 class="card-title">Contáctanos</h5>
+                <p class="card-text">¿Necesitas asesoría? Estamos en Santa Ana para atenderte.</p>
+                <a href="{{ url_for('contacto') }}" class="btn btn-info">Contactar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <h2 class="text-center mb-4">¿Por qué elegir COMSERTEL?</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="media">
+            <i class="fas fa-crown fa-2x text-warning mr-3"></i>
+            <div class="media-body">
+                <h5>Distribuidor Líder</h5>
+                <p>Somos el distribuidor número 1 de Claro en occidente con más de 60 empleados y 8 años de experiencia.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="media">
+            <i class="fas fa-home fa-2x text-danger mr-3"></i>
+            <div class="media-body">
+                <h5>Servicio Cercano</h5>
+                <p>Atención personalizada casa por casa y soporte técnico especializado en Santa Ana y occidente.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="media">
+            <i class="fas fa-wifi fa-2x text-secondary mr-3"></i>
+            <div class="media-body">
+                <h5>Servicios Integrales</h5>
+                <p>Internet, televisión por suscripción y telefonía fija en paquetes combinados con precios competitivos.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="media">
+            <i class="fas fa-clock fa-2x text-primary mr-3"></i>
+            <div class="media-body">
+                <h5>Disponibilidad 24/7</h5>
+                <p>Soporte técnico continuo y atención al cliente para garantizar tu satisfacción.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

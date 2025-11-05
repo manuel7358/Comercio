@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+
+{% block title %}Pago - {{ producto.nombre }} - COMSERTEL{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-credit-card"></i> Pago - {{ producto.nombre }}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Información del producto -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <img src="{{ url_for('static', filename=producto.imagen) }}" class="img-fluid rounded" alt="{{ producto.nombre }}">
+                        </div>
+                        <div class="col-md-8">
+                            <h4>{{ producto.nombre }}</h4>
+                            <p class="text-muted">{{ producto.descripcion }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Selección de plan -->
+                    <h5 class="mb-3">Selecciona tu Plan:</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card h-100 border-primary">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="plan" id="basico" value="basico" checked>
+                                        <label class="form-check-label" for="basico">
+                                            <h6 class="card-title">{{ producto.plan_basico }}</h6>
+                                            <p class="card-text small text-muted">
+                                                {% if "Internet" in producto.nombre %}
+                                                    Plan básico ideal para navegación básica, redes sociales y streaming en calidad estándar.
+                                                {% elif "Televisión" in producto.nombre %}
+                                                    Acceso a canales locales e internacionales básicos con calidad SD.
+                                                {% elif "Telefonía" in producto.nombre %}
+                                                    Llamadas locales con 100 minutos incluidos, minutos adicionales a bajo costo.
+                                                {% elif "Triple Play" in producto.nombre %}
+                                                    Internet básico + TV básica + 100 minutos de teléfono, paquete completo para el hogar.
+                                                {% elif "Internet + TV" in producto.nombre %}
+                                                    Internet básico + TV básica, perfecto para entretenimiento familiar.
+                                                {% else %}
+                                                    Internet básico + 100 minutos de teléfono, comunicación esencial para el hogar.
+                                                {% endif %}
+                                            </p>
+                                            <div class="text-center">
+                                                <span class="h4 text-success fw-bold">${{ "%.2f"|format(producto.precio_basico) }}</span>
+                                                <small class="text-muted">/mes</small>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100 border-warning">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="plan" id="estandar" value="estandar">
+                                        <label class="form-check-label" for="estandar">
+                                            <h6 class="card-title">{{ producto.plan_estandar }}</h6>
+                                            <p class="card-text small text-muted">
+                                                {% if "Internet" in producto.nombre %}
+                                                    Plan estándar para trabajo remoto, gaming y streaming en HD.
+                                                {% elif "Televisión" in producto.nombre %}
+                                                    Amplia variedad de canales incluyendo deportes y películas en HD.
+                                                {% elif "Telefonía" in producto.nombre %}
+                                                    Llamadas locales e internacionales con 300 minutos incluidos.
+                                                {% elif "Triple Play" in producto.nombre %}
+                                                    Internet estándar + TV ampliada + 300 minutos de teléfono, máxima conectividad.
+                                                {% elif "Internet + TV" in producto.nombre %}
+                                                    Internet estándar + TV ampliada, entretenimiento premium para la familia.
+                                                {% else %}
+                                                    Internet estándar + 300 minutos de teléfono, comunicación avanzada.
+                                                {% endif %}
+                                            </p>
+                                            <div class="text-center">
+                                                <span class="h4 text-success fw-bold">${{ "%.2f"|format(producto.precio_estandar) }}</span>
+                                                <small class="text-muted">/mes</small>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100 border-danger">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="plan" id="premium" value="premium">
+                                        <label class="form-check-label" for="premium">
+                                            <h6 class="card-title">{{ producto.plan_premium }}</h6>
+                                            <p class="card-text small text-muted">
+                                                {% if "Internet" in producto.nombre %}
+                                                    Máxima velocidad para múltiples dispositivos, 4K streaming y gaming profesional.
+                                                {% elif "Televisión" in producto.nombre %}
+                                                    Todos los canales disponibles incluyendo premium y 4K, experiencia completa.
+                                                {% elif "Telefonía" in producto.nombre %}
+                                                    Llamadas ilimitadas locales e internacionales, comunicación sin límites.
+                                                {% elif "Triple Play" in producto.nombre %}
+                                                    Internet premium + TV completa + teléfono ilimitado, experiencia total.
+                                                {% elif "Internet + TV" in producto.nombre %}
+                                                    Internet premium + TV completa, entretenimiento de máxima calidad.
+                                                {% else %}
+                                                    Internet premium + teléfono ilimitado, conectividad ilimitada.
+                                                {% endif %}
+                                            </p>
+                                            <div class="text-center">
+                                                <span class="h4 text-success fw-bold">${{ "%.2f"|format(producto.precio_premium) }}</span>
+                                                <small class="text-muted">/mes</small>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Precio total -->
+                    <div class="alert alert-info text-center" id="precio-total">
+                        <h5 class="mb-0">
+                            <i class="fas fa-calculator"></i>
+                            Total a pagar: <strong class="text-primary">$<span id="total">20.00</span>/mes</strong>
+                        </h5>
+                        <small class="text-muted">Precio incluye IVA y servicios adicionales</small>
+                    </div>
+
+                    <!-- Formulario de datos del cliente -->
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        <h5 class="mb-3">Datos del Cliente:</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.nombre.label(class="form-label") }}
+                                {{ form.nombre(class="form-control") }}
+                                {% if form.nombre.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.nombre.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.email.label(class="form-label") }}
+                                {{ form.email(class="form-control") }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.email.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.telefono.label(class="form-label") }}
+                                {{ form.telefono(class="form-control") }}
+                                {% if form.telefono.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.telefono.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Método de pago -->
+                        <h5 class="mb-3">Método de Pago:</h5>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="card h-100 border-success">
+                                    <div class="card-body text-center">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="metodo_pago" id="tarjeta" value="tarjeta" checked>
+                                            <label class="form-check-label" for="tarjeta">
+                                                <i class="fas fa-credit-card fa-2x text-primary mb-2"></i>
+                                                <h6 class="card-title">Tarjeta de Crédito/Débito</h6>
+                                                <p class="card-text small text-muted">
+                                                    Pago seguro con tarjeta Visa, Mastercard o American Express. Procesamiento inmediato.
+                                                </p>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100 border-warning">
+                                    <div class="card-body text-center">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="metodo_pago" id="efectivo" value="efectivo">
+                                            <label class="form-check-label" for="efectivo">
+                                                <i class="fas fa-money-bill-wave fa-2x text-warning mb-2"></i>
+                                                <h6 class="card-title">Pago en Efectivo</h6>
+                                                <p class="card-text small text-muted">
+                                                    Pago en oficinas de COMSERTEL o puntos autorizados. Confirmación inmediata.
+                                                </p>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Campos de tarjeta de crédito (solo visibles cuando se selecciona tarjeta) -->
+                        <div id="campos-tarjeta" class="mb-4" style="display: block;">
+                            <h5 class="mb-3">Datos de la Tarjeta:</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ form.numero_tarjeta.label(class="form-label") }}
+                                    {{ form.numero_tarjeta(class="form-control", placeholder="1234 5678 9012 3456") }}
+                                    {% if form.numero_tarjeta.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.numero_tarjeta.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    {{ form.fecha_expiracion.label(class="form-label") }}
+                                    {{ form.fecha_expiracion(class="form-control", placeholder="MM/AA") }}
+                                    {% if form.fecha_expiracion.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.fecha_expiracion.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    {{ form.cvv.label(class="form-label") }}
+                                    {{ form.cvv(class="form-control", placeholder="123") }}
+                                    {% if form.cvv.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.cvv.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    {{ form.nombre_tarjeta.label(class="form-label") }}
+                                    {{ form.nombre_tarjeta(class="form-control", placeholder="NOMBRE COMPLETO EN LA TARJETA") }}
+                                    {% if form.nombre_tarjeta.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.nombre_tarjeta.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-success btn-lg") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const planRadios = document.querySelectorAll('input[name="plan"]');
+    const totalSpan = document.getElementById('total');
+    const form = document.querySelector('form');
+
+    // Función para actualizar precio
+    function updatePrice() {
+        const selectedPlan = document.querySelector('input[name="plan"]:checked').value;
+        let price = 0;
+
+        {% if producto %}
+        if (selectedPlan === 'basico') {
+            price = {{ producto.precio_basico }};
+        } else if (selectedPlan === 'estandar') {
+            price = {{ producto.precio_estandar }};
+        } else if (selectedPlan === 'premium') {
+            price = {{ producto.precio_premium }};
+        }
+        {% endif %}
+
+        totalSpan.textContent = price.toFixed(2);
+    }
+
+    // Event listeners para los radios
+    planRadios.forEach(radio => {
+        radio.addEventListener('change', updatePrice);
+    });
+
+    // Función para mostrar/ocultar campos de tarjeta
+    function toggleCamposTarjeta() {
+        const metodoPago = document.querySelector('input[name="metodo_pago"]:checked');
+        const camposTarjeta = document.getElementById('campos-tarjeta');
+
+        if (metodoPago && metodoPago.value === 'tarjeta') {
+            camposTarjeta.style.display = 'block';
+        } else {
+            camposTarjeta.style.display = 'none';
+        }
+    }
+
+    // Event listeners para métodos de pago
+    document.querySelectorAll('input[name="metodo_pago"]').forEach(radio => {
+        radio.addEventListener('change', toggleCamposTarjeta);
+    });
+
+    // Actualizar el formulario antes de enviar
+    form.addEventListener('submit', function(e) {
+        const selectedPlan = document.querySelector('input[name="plan"]:checked');
+        const selectedMetodoPago = document.querySelector('input[name="metodo_pago"]:checked');
+
+        if (selectedPlan) {
+            // Crear campo oculto con el plan seleccionado
+            const hiddenField = document.createElement('input');
+            hiddenField.type = 'hidden';
+            hiddenField.name = 'plan';
+            hiddenField.value = selectedPlan.value;
+            form.appendChild(hiddenField);
+        }
+
+        if (selectedMetodoPago) {
+            // Crear campo oculto con el método de pago seleccionado
+            const hiddenFieldPago = document.createElement('input');
+            hiddenFieldPago.type = 'hidden';
+            hiddenFieldPago.name = 'metodo_pago';
+            hiddenFieldPago.value = selectedMetodoPago.value;
+            form.appendChild(hiddenFieldPago);
+        }
+    });
+
+    // Inicializar campos de tarjeta
+    toggleCamposTarjeta();
+
+    // Inicializar precio
+    updatePrice();
+});
+</script>
+{% endblock %}

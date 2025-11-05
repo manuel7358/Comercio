@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Servicios - COMSERTEL{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="text-center mb-4">
+            <i class="fas fa-wifi"></i> Servicios Residenciales Claro
+        </h1>
+        <p class="text-center lead mb-5">
+            Conectividad, entretenimiento y comunicación para tu hogar. Servicios de calidad con atención personalizada.
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    {% for producto in productos %}
+    <div class="col-lg-4 col-md-6 galeria-item">
+        <div class="card h-100 shadow-sm">
+            <img src="{{ url_for('static', filename=producto.imagen) }}" class="card-img-top" alt="{{ producto.nombre }}">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ producto.nombre }}</h5>
+                <p class="card-text flex-grow-1">{{ producto.descripcion }}</p>
+                <button class="btn btn-primary mt-auto" data-bs-toggle="modal" data-bs-target="#modal{{ producto.id }}">
+                    <i class="fas fa-eye"></i> Ver Detalles
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para detalles del producto -->
+    <div class="modal fade" id="modal{{ producto.id }}" tabindex="-1" aria-labelledby="modalLabel{{ producto.id }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel{{ producto.id }}">{{ producto.nombre }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img src="{{ url_for('static', filename=producto.imagen) }}" class="img-fluid mb-3" alt="{{ producto.nombre }}">
+                    <p>{{ producto.descripcion }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <a href="{{ url_for('pago', producto_id=producto.id) }}" class="btn btn-primary">
+                        <i class="fas fa-shopping-cart"></i> Comprar Ahora
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if productos %}
+<div class="row mt-5">
+    <div class="col-12 text-center">
+        <p class="text-muted">Mostrando {{ productos|length }} producto(s)</p>
+    </div>
+</div>
+{% else %}
+<div class="row mt-5">
+    <div class="col-12 text-center">
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle"></i> No hay productos disponibles en este momento.
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

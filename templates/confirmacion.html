@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Confirmación de Pedido - COMSERTEL{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white text-center">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-check-circle"></i> ¡Pedido Confirmado!
+                    </h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                        <h4 class="mt-3">¡Gracias por tu compra!</h4>
+                        <p class="text-muted">Tu pedido ha sido procesado exitosamente.</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0"><i class="fas fa-user"></i> Datos del Cliente</h5>
+                                </div>
+                                <div class="card-body text-start">
+                                    <p><strong>Nombre:</strong> {{ pedido.nombre_cliente }}</p>
+                                    <p><strong>Email:</strong> {{ pedido.email_cliente }}</p>
+                                    <p><strong>Teléfono:</strong> {{ pedido.telefono_cliente }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0"><i class="fas fa-shopping-cart"></i> Detalles del Pedido</h5>
+                                </div>
+                                <div class="card-body text-start">
+                                    <p><strong>Servicio:</strong> {{ pedido.producto.nombre }}</p>
+                                    <p><strong>Plan:</strong> {{ pedido.plan_seleccionado }}</p>
+                                    <p><strong>Precio Mensual:</strong> ${{ "%.2f"|format(pedido.precio) }}</p>
+                                    <p><strong>Método de Pago:</strong>
+                                        {% if pedido.metodo_pago == 'tarjeta' %}
+                                            <span class="badge bg-primary"><i class="fas fa-credit-card"></i> Tarjeta de Crédito/Débito</span>
+                                        {% else %}
+                                            <span class="badge bg-warning"><i class="fas fa-money-bill-wave"></i> Pago en Efectivo</span>
+                                        {% endif %}
+                                    </p>
+                                    {% if pedido.metodo_pago == 'tarjeta' %}
+                                    <p><strong>Número de Tarjeta:</strong> **** **** **** {{ pedido.numero_tarjeta[-4:] if pedido.numero_tarjeta else 'N/A' }}</p>
+                                    <p><strong>Fecha de Expiración:</strong> {{ pedido.fecha_expiracion if pedido.fecha_expiracion else 'N/A' }}</p>
+                                    <p><strong>Nombre en Tarjeta:</strong> {{ pedido.nombre_tarjeta if pedido.nombre_tarjeta else 'N/A' }}</p>
+                                    {% endif %}
+                                    <p><strong>ID del Pedido:</strong> #{{ pedido.id }}</p>
+                                    <p><strong>Fecha:</strong> {{ pedido.fecha_pedido.strftime('%d/%m/%Y %H:%M') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-4">
+                        <h6><i class="fas fa-info-circle"></i> Próximos Pasos:</h6>
+                        <ul class="text-start mb-0">
+                            <li>Recibirás un correo electrónico con los detalles de tu pedido</li>
+                            <li>Un representante de COMSERTEL se pondrá en contacto contigo en las próximas 24 horas</li>
+                            <li>La instalación se programará según tu disponibilidad</li>
+                            <li>Para cualquier consulta, puedes contactarnos al +503 1234-5678</li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="{{ url_for('inicio') }}" class="btn btn-primary me-2">
+                            <i class="fas fa-home"></i> Volver al Inicio
+                        </a>
+                        <a href="{{ url_for('galerias') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-shopping-bag"></i> Ver Más Servicios
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
