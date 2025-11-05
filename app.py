@@ -2,34 +2,32 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SubmitField
-from wtforms.validators import DataRequired, Email
+from wtforms.fields import EmailField, TelField
+from wtforms.validators import DataRequired, Email, Regexp, Optional, ValidationError
 from flask_mail import Mail, Message
 import os
+import re
 
-# =======================
-# CONFIGURACIÓN INICIAL
-# =======================
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'tu_clave_secreta_aqui'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///comercio_electronico.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# --- Configuración de correo directa (sin .env) ---
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'              # Servidor SMTP (Gmail)
-app.config['MAIL_PORT'] = 587                             # Puerto TLS
-app.config['MAIL_USE_TLS'] = True                         # Activar TLS
-app.config['MAIL_USE_SSL'] = False                        # No usar SSL
-app.config['MAIL_USERNAME'] = 'impresorsa371@gmail.com'   # Tu dirección de correo
-app.config['MAIL_PASSWORD'] = 'dlmq sard qnyh cuhf'       # App Password de Gmail (sin espacios si los hubiera)
-app.config['MAIL_DEFAULT_SENDER'] = ('COMSERTEL', 'impresorsa371@gmail.com')  # Nombre y remitente
-app.config['MAIL_NOTIFY_TO'] = 'lm20063@ues.edu.sv'       # Destino para notificaciones internas
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'              
+app.config['MAIL_PORT'] = 587                             
+app.config['MAIL_USE_TLS'] = True                         
+app.config['MAIL_USE_SSL'] = False                        
+app.config['MAIL_USERNAME'] = 'impresorsa371@gmail.com'   
+app.config['MAIL_PASSWORD'] = 'dlmq sard qnyh cuhf'       
+app.config['MAIL_DEFAULT_SENDER'] = ('COMSERTEL', 'impresorsa371@gmail.com')  
+app.config['MAIL_NOTIFY_TO'] = 'lm20063@ues.edu.sv'       
 
 mail = Mail(app)
 db = SQLAlchemy(app)
 
-# =======================
-# MODELOS DE BASE DE DATOS
-# =======================
+
 class Producto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
@@ -75,38 +73,67 @@ class Pedido(db.Model):
 
     producto = db.relationship('Producto', backref=db.backref('pedidos', lazy=True))
 
-# =======================
-# FORMULARIOS
-# =======================
+
+
+PHONE_REGEX = r'^(?:\+503[-\s]?)?\d{4}[-\s]?\d{4}$'
+
+CARD_REGEX = r'^\d{13,19}$'
+
+EXP_REGEX = r'^(0[1-9]|1[0-2])\/\d{2}$'
+
+CVV_REGEX = r'^\d{3,4}$'
+
+
 class ContactoForm(FlaskForm):
     nombre = StringField('Nombre', validators=[DataRequired()])
-    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
+    email = EmailField('Correo Electrónico', validators=[DataRequired(), Email()])
     mensaje = TextAreaField('Mensaje', validators=[DataRequired()])
     submit = SubmitField('Enviar')
 
 
 class PagoForm(FlaskForm):
     nombre = StringField('Nombre Completo', validators=[DataRequired()])
-    email = StringField('Correo Electrónico', validators=[DataRequired()])
-    telefono = StringField('Teléfono', validators=[DataRequired()])
+    email = EmailField('Correo Electrónico', validators=[DataRequired(), Email()])
+    telefono = TelField('Teléfono', validators=[
+        DataRequired(),
+        Regexp(PHONE_REGEX, message="Ingresa un teléfono válido (8 dígitos, opcional prefijo +503).")
+    ])
     plan = StringField('Plan Seleccionado', validators=[DataRequired()])
     metodo_pago = StringField('Método de Pago', validators=[DataRequired()])
-    numero_tarjeta = StringField('Número de Tarjeta')
-    fecha_expiracion = StringField('Fecha de Expiración')
-    cvv = StringField('CVV')
-    nombre_tarjeta = StringField('Nombre en la Tarjeta')
+    numero_tarjeta = StringField('Número de Tarjeta', validators=[Optional(), Regexp(CARD_REGEX, message="Número de tarjeta inválido.")])
+    fecha_expiracion = StringField('Fecha de Expiración (MM/AA)', validators=[Optional(), Regexp(EXP_REGEX, message="Usa el formato MM/AA.")])
+    cvv = StringField('CVV', validators=[Optional(), Regexp(CVV_REGEX, message="CVV inválido.")])
+    nombre_tarjeta = StringField('Nombre en la Tarjeta', validators=[Optional()])
     submit = SubmitField('Confirmar Pago')
 
+    def validate(self, extra_validators=None):
+        ok = super().validate(extra_validators=extra_validators)
+        if not ok:
+            return False
+       
+        if (self.metodo_pago.data or '').strip().lower() == 'tarjeta':
+            errors = False
+            if not self.numero_tarjeta.data or not re.match(CARD_REGEX, self.numero_tarjeta.data):
+                self.numero_tarjeta.errors.append("Ingresa un número de tarjeta válido (solo dígitos, 13-19).")
+                errors = True
+            if not self.fecha_expiracion.data or not re.match(EXP_REGEX, self.fecha_expiracion.data):
+                self.fecha_expiracion.errors.append("Ingresa la fecha de expiración en formato MM/AA.")
+                errors = True
+            if not self.cvv.data or not re.match(CVV_REGEX, self.cvv.data):
+                self.cvv.errors.append("Ingresa un CVV válido (3-4 dígitos).")
+                errors = True
+            if not self.nombre_tarjeta.data:
+                self.nombre_tarjeta.errors.append("Ingresa el nombre tal como aparece en la tarjeta.")
+                errors = True
+            if errors:
+                return False
+        return True
 
-# =======================
-# CREACIÓN DE TABLAS
-# =======================
+
 with app.app_context():
     db.create_all()
 
-# =======================
-# RUTAS DE LA APLICACIÓN
-# =======================
+
 @app.route('/')
 def inicio():
     return render_template('inicio.html')
@@ -187,8 +214,8 @@ def pago(producto_id):
     form = PagoForm()
     if form.validate_on_submit():
         # Normalizar valores del form
-        plan_sel = (form.plan.data or '').strip().lower()            # 'basico' | 'estandar' | 'premium'
-        metodo_pago = (form.metodo_pago.data or '').strip().lower()  # 'tarjeta' | 'efectivo'
+        plan_sel = (form.plan.data or '').strip().lower()            
+        metodo_pago = (form.metodo_pago.data or '').strip().lower()  
 
         # Calcular precio según plan
         try:
@@ -197,7 +224,7 @@ def pago(producto_id):
             flash("Plan inválido. Selecciona nuevamente.", "danger")
             return redirect(url_for('pago', producto_id=producto_id))
 
-        # Crear pedido
+        
         nuevo_pedido = Pedido(
             producto_id=producto_id,
             nombre_cliente=form.nombre.data,
@@ -208,7 +235,7 @@ def pago(producto_id):
             metodo_pago=metodo_pago
         )
 
-        # Si el método de pago es tarjeta, guardar los datos
+       
         if metodo_pago == 'tarjeta':
             nuevo_pedido.numero_tarjeta = form.numero_tarjeta.data
             nuevo_pedido.fecha_expiracion = form.fecha_expiracion.data
@@ -218,8 +245,7 @@ def pago(producto_id):
         db.session.add(nuevo_pedido)
         db.session.commit()
 
-        # ====== ENVIAR CORREOS DE CONFIRMACIÓN ======
-        # Texto legible del plan
+        
         plan_human = {
             'basico': producto.plan_basico,
             'estandar': producto.plan_estandar,
@@ -258,7 +284,7 @@ def pago(producto_id):
         )
 
         try:
-            # Correo a COMSERTEL (admin)
+            
             msg_admin = Message(
                 subject=asunto_admin,
                 recipients=[app.config['MAIL_NOTIFY_TO']],
@@ -266,7 +292,7 @@ def pago(producto_id):
             )
             mail.send(msg_admin)
 
-            # Correo al cliente
+           
             msg_cliente = Message(
                 subject=asunto_cliente,
                 recipients=[nuevo_pedido.email_cliente],
@@ -277,10 +303,10 @@ def pago(producto_id):
             flash("¡Pedido confirmado! Te enviamos un correo con el resumen.", "success")
 
         except Exception:
-            # No detenemos el flujo si falla el correo
+            
             flash("Pedido confirmado, pero hubo un problema al enviar el correo de confirmación.", "warning")
 
-        # Redirigir a la página de confirmación
+        
         return redirect(url_for('confirmacion', pedido_id=nuevo_pedido.id))
 
     return render_template('pago.html', producto=producto, form=form)
@@ -292,8 +318,5 @@ def confirmacion(pedido_id):
     return render_template('confirmacion.html', pedido=pedido)
 
 
-# =======================
-# EJECUCIÓN DE LA APP
-# =======================
 if __name__ == '__main__':
     app.run(debug=True)
